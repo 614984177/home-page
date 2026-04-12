@@ -2724,11 +2724,14 @@ input, select, textarea {
 		}
 
 		#header a {
-			color: #d2f2e9;
+			color: #0066cc;
+			text-decoration: none;
+			font-size: 0.85em;
 		}
 
 			#header a:hover {
-				color: #ffffff !important;
+				color: #004499 !important;
+				text-decoration: underline;
 			}
 
 		#header > header {
@@ -2880,7 +2883,7 @@ input, select, textarea {
 				font-size: 13pt;
 			}
 
-		/* Header */
+			/* Header */
 
 			#header {
 				width: 21em;
@@ -2893,6 +2896,14 @@ input, select, textarea {
 				#header > footer {
 					padding: 1.5em;
 				}
+
+					#header > footer .copyright {
+						list-style: none;
+						padding: 0;
+						margin: 0;
+						font-size: 0.75em;
+						text-align: left;
+					}
 
 		/* Wrapper */
 
