@@ -1,0 +1,48 @@
+name: Deploy to Tencent Cloud COS and Refresh CDN
+
+on:
+  push:
+    branches:
+      - main  # 如果您的主分支是 master，请修改为 master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install coscmd and tccli
+        run: |
+          pip install coscmd tccli
+
+      - name: Configure COS and Upload
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          BUCKET: ${{ secrets.COS_BUCKET }}
+          REGION: ${{ secrets.COS_REGION }}
+        run: |
+          # 配置 COS
+          coscmd config -a $SECRET_ID -s $SECRET_KEY -b $BUCKET -r $REGION
+          # 上传项目所有文件（排除 .git 和 .github 文件夹）到 COS 根目录
+          coscmd upload -rsf --delete ./ / --ignore "./.git/*,./.github/*"
+
+      - name: Refresh CDN
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          CDN_DOMAIN: ${{ secrets.CDN_DOMAIN }}
+        run: |
+          # 配置 tccli，地域统一使用 ap-guangzhou（内容分发网络 API 的默认接入地域）
+          tccli configure set secretId $SECRET_ID
+          tccli configure set secretKey $SECRET_KEY
+          tccli configure set region ap-guangzhou
+          
+          # 刷新 CDN 目录缓存（清除 https://$CDN_DOMAIN/ 下的所有文件缓存）
+          tccli cdn PurgePathCache --Paths "https://$CDN_DOMAIN/" --FlushType flush
