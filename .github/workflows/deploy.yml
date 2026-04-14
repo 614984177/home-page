@@ -45,4 +45,4 @@ jobs:
           tccli configure set region ap-guangzhou
           
           # 刷新 CDN 目录缓存（清除 https://$CDN_DOMAIN/ 下的所有文件缓存）
-          tccli cdn PurgePathCache --Paths "https://$CDN_DOMAIN/" --FlushType flush
+          tccli cdn PurgePathCache --Paths "[\"https://$CDN_DOMAIN/\"]" --FlushType flush
